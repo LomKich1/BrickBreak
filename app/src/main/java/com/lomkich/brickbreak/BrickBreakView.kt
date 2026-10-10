@@ -67,18 +67,29 @@ class BrickBreakView(context: Context) : View(context) {
         bricks.clear()
         paddleWidth = dp(if (System.currentTimeMillis() < wideUntil) 150f else 112f)
         paddle.set(width / 2f - paddleWidth / 2f, height - dp(62f), width / 2f + paddleWidth / 2f, height - dp(48f))
+        val patterns = listOf(
+            listOf("#######", "#######", "#######", "#######", "#######"),
+            listOf("#######", "##...##", "##...##", "##...##", "#######"),
+            listOf("#..#..#", "##.#.##", "#######", "##.#.##", "#..#..#"),
+            listOf("#######", "...#...", "...#...", "...#...", "#######"),
+            listOf("#.#.#.#", ".#.#.#.", "#.#.#.#", ".#.#.#.", "#.#.#.#"),
+            listOf("#######", "#.....#", "###.###", "#.....#", "#######"),
+            listOf("#######", "#######", "..###..", ".#####.", "#######")
+        )
+        val pattern = patterns[(level - 1) % patterns.size]
         val cols = 7
-        val rows = min(5 + (level - 1) / 2, 7)
         val gap = dp(5f)
         val side = dp(16f)
         val brickW = (width - side * 2 - gap * (cols - 1)) / cols
         val brickH = dp(22f)
         val top = dp(90f)
-        for (r in 0 until rows) {
+        for (r in pattern.indices) {
             for (c in 0 until cols) {
+                if (pattern[r][c] != '#') continue
                 val left = side + c * (brickW + gap)
                 val rect = RectF(left, top + r * (brickH + gap), left + brickW, top + r * (brickH + gap) + brickH)
-                bricks += Brick(rect, if (r == 0 && level > 1) 2 else 1, brickColors[r % brickColors.size])
+                val hp = if (level > 1 && (r + c + level) % 5 == 0) 2 else 1
+                bricks += Brick(rect, hp, brickColors[(r + level - 1) % brickColors.size])
             }
         }
         balls += Ball(width / 2f, paddle.top - ballRadius - dp(2f), dp(190f), -dp(250f), ballRadius)

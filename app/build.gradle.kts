@@ -18,6 +18,8 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = false
+            // Подписываем release debug-ключом CI, чтобы APK можно было установить без ручной настройки keystore.
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
 
